@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SolarMetrics.Infrastructure.Persistence.Entitites;
 
 namespace SolarMetrics.Infrastructure.Persistence.Repositories;
@@ -12,7 +12,7 @@ public class ClienteRepository(SolarMetricsContext context) : IClienteRepository
         return cliente;
     }
     
-    public async Task<Cliente> GetByIdAsync(Guid id)
+    public async Task<Cliente?> GetByIdAsync(Guid id)
     {
         return await context.Clientes.FindAsync(id);
     }
@@ -23,7 +23,7 @@ public class ClienteRepository(SolarMetricsContext context) : IClienteRepository
         await context.SaveChangesAsync();
     }
     
-    public async Task<string> FindEmailAsync(string email, Guid? idToIgnore = null)
+    public async Task<string?> FindEmailAsync(string email, Guid? idToIgnore = null)
     {
         var cliente = await context.Clientes
             .FirstOrDefaultAsync(c => c.Email == email && (idToIgnore == null || c.Id != idToIgnore.Value));

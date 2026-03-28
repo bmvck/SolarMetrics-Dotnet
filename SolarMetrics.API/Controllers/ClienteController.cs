@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Http.HttpResults;
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarMetrics.DTOs;
 using SolarMetrics.Exceptions;
@@ -12,6 +12,7 @@ namespace SolarMetrics.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 [SwaggerTag("Manipulação dos cadastros dos nosso clientes (CRUD). " +
             "Permite criar, atualizar, buscar e deletar os cadastros no sistema.")]
 
