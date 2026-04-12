@@ -1,0 +1,13 @@
+@model SolarMetrics.Web.Models.Monitoramento
+@{
+    ViewData["Title"] = "Excluir monitoramento";
+}
+
+<p>Excluir o registro do período <strong>@Model.Periodo.ToString("dd/MM/yyyy")</strong>?</p>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id"/>
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>

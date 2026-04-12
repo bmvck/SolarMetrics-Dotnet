@@ -9,36 +9,40 @@ public class SistemaMapping : IEntityTypeConfiguration<Sistema>
     public void Configure(EntityTypeBuilder<Sistema> b)
     {
         b.ToTable("SM_SISTEMA");
-        
-        // PK
+
         b.HasKey(x => x.Id);
-        
+
         b.Property(x => x.Id)
-            .ValueGeneratedNever();
-        
+            .ValueGeneratedNever()
+            .HasColumnName("ID")
+            .AsOracleUuid36();
+
         b.Property(x => x.NomeInstalacao)
             .IsRequired()
-            .HasMaxLength(50);
-        
+            .HasMaxLength(200)
+            .HasColumnName("NOME_INSTALACAO");
+
         b.Property(x => x.DataInstalacao)
-            .IsRequired();
-        
+            .IsRequired()
+            .HasColumnName("DATA_INSTALACAO")
+            .HasColumnType("DATE");
+
         b.Property(x => x.PotenciaTotal)
-            .IsRequired();
-        
+            .IsRequired()
+            .HasColumnName("POTENCIA_TOTAL");
+
         b.Property(x => x.Status)
             .IsRequired()
-            .HasMaxLength(50);
-        
-        // 1..N
-        b.HasMany(x => x.Sensores)
-            .WithOne(x => x.Sistema)
-            .HasForeignKey(x => x.SistemaId);
-        
-        // 1..N
-        b.HasMany(x => x.PaineisSolares)
-            .WithOne(x => x.Sistema)
-            .HasForeignKey(x => x.SistemaId);
+            .HasMaxLength(20)
+            .HasColumnName("STATUS");
 
+        b.Property(x => x.ClienteId)
+            .HasColumnName("CLIENTE_ID")
+            .AsOracleUuid36();
+
+        b.HasOne(x => x.Cliente)
+            .WithMany(x => x.Sistemas)
+            .HasForeignKey(x => x.ClienteId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

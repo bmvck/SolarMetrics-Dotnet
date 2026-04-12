@@ -3,13 +3,12 @@
 public class PainelSolar
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
-    public string Modelo { get; set; }
-    public string Fabricante { get; set; }
+    public string Modelo { get; set; } = null!;
+    public string Fabricante { get; set; } = null!;
     public int PotenciaMaxima { get; set; }
-    public int DataFabricacao { get; set; }
+    public DateTime DataFabricacao { get; set; }
     public int Eficiencia { get; set; }
-    
-    // N..1
+
     public Guid SistemaId { get; set; }
-    public Sistema Sistema { get; set; }
+    public Sistema Sistema { get; set; } = null!;
 }

@@ -13,7 +13,7 @@ public class ClienteResponse
         return new ClienteResponse
         {
             Nome = cliente.Nome,
-            TipoUsuario = cliente.TipoUsuario
+            TipoUsuario = cliente.TipoUsuario ?? string.Empty
         };
     }
 }

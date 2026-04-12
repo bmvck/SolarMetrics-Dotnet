@@ -8,7 +8,7 @@ using SolarMetrics;
 
 #nullable disable
 
-namespace SolarMetrics.Migrations
+namespace SolarMetrics.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SolarMetricsContext))]
     partial class SolarMetricsContextModelSnapshot : ModelSnapshot
@@ -17,64 +17,164 @@ namespace SolarMetrics.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Auditoria", b =>
+                {
+                    b.Property<long>("IdAuditoria")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(19)")
+                        .HasColumnName("ID_AUDITORIA");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IdAuditoria"));
+
+                    b.Property<string>("DadosNew")
+                        .HasColumnType("CLOB")
+                        .HasColumnName("DADOS_NEW");
+
+                    b.Property<string>("DadosOld")
+                        .HasColumnType("CLOB")
+                        .HasColumnName("DADOS_OLD");
+
+                    b.Property<DateTime>("DataOperacao")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("DATA_OPERACAO");
+
+                    b.Property<string>("NomeTabela")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)")
+                        .HasColumnName("NOME_TABELA");
+
+                    b.Property<string>("Operacao")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("NVARCHAR2(10)")
+                        .HasColumnName("OPERACAO");
+
+                    b.Property<string>("UsuarioOracle")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)")
+                        .HasColumnName("USUARIO_ORACLE");
+
+                    b.HasKey("IdAuditoria");
+
+                    b.ToTable("SM_AUDITORIA", (string)null);
+                });
+
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Cliente", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("ID");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("EMAIL");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("NOME");
 
                     b.Property<string>("Telefone")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("NVARCHAR2(11)");
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR2(30)")
+                        .HasColumnName("TELEFONE");
 
                     b.Property<string>("TipoUsuario")
-                        .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("TIPO_USER");
+
+                    b.Property<string>("UsuarioUsername")
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("USUARIO_USERNAME");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("UsuarioUsername")
+                        .IsUnique()
+                        .HasFilter("\"USUARIO_USERNAME\" IS NOT NULL");
+
                     b.ToTable("SM_USUARIO", (string)null);
+                });
+
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Login", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("USERNAME");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("PASSWORD");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("SM_LOGIN", (string)null);
+                });
+
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.LoginRole", b =>
+                {
+                    b.Property<string>("SmLoginUsername")
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("SM_LOGIN_USERNAME");
+
+                    b.Property<string>("Role")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("ROLES");
+
+                    b.HasKey("SmLoginUsername", "Role");
+
+                    b.ToTable("SM_LOGIN_ROLES", (string)null);
                 });
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Monitoramento", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("ID");
 
                     b.Property<int>("MaximaLeitura")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("MAXIMA_LEITURA");
 
                     b.Property<int>("MediaLeitura")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("MEDIA_LEITURA");
 
-                    b.Property<string>("Periodo")
+                    b.Property<DateTime>("Periodo")
+                        .HasColumnType("DATE")
+                        .HasColumnName("PERIODO");
+
+                    b.Property<string>("SensorId")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(10)");
-
-                    b.Property<Guid>("SensorId")
-                        .HasColumnType("RAW(16)");
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("SENSOR_ID");
 
                     b.Property<int>("ValorLido")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("VALOR_LIDO");
 
                     b.HasKey("Id");
 
@@ -85,30 +185,40 @@ namespace SolarMetrics.Migrations
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.PainelSolar", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("ID");
 
-                    b.Property<int>("DataFabricacao")
-                        .HasColumnType("NUMBER(10)");
+                    b.Property<DateTime>("DataFabricacao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DATA_FABRICACAO");
 
                     b.Property<int>("Eficiencia")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("EFICIENCIA");
 
                     b.Property<string>("Fabricante")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("FABRICANTE");
 
                     b.Property<string>("Modelo")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("NVARCHAR2(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("MODELO");
 
                     b.Property<int>("PotenciaMaxima")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("POTENCIA_MAXIMA");
 
-                    b.Property<Guid>("SistemaId")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("SistemaId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("SISTEMA_ID");
 
                     b.HasKey("Id");
 
@@ -119,64 +229,130 @@ namespace SolarMetrics.Migrations
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Sensor", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("ID");
 
                     b.Property<string>("Localizacao")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR2(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("LOCALIZACAO");
 
-                    b.Property<Guid>("SistemaId")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("SensorLoginUsername")
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("SENSOR_LOGIN_USERNAME");
+
+                    b.Property<string>("SistemaId")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("SISTEMA_ID");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("STATUS");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("TIPO");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SensorLoginUsername")
+                        .IsUnique()
+                        .HasFilter("\"SENSOR_LOGIN_USERNAME\" IS NOT NULL");
 
                     b.HasIndex("SistemaId");
 
                     b.ToTable("SM_SENSOR", (string)null);
                 });
 
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.SensorLogin", b =>
+                {
+                    b.Property<string>("Username")
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("USERNAME");
+
+                    b.Property<int>("IsSuperuser")
+                        .HasColumnType("NUMBER(1)")
+                        .HasColumnName("IS_SUPERUSER");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("PASSWORD");
+
+                    b.HasKey("Username");
+
+                    b.ToTable("SM_SENSOR_LOGIN", (string)null);
+                });
+
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Sistema", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("ID");
 
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<string>("DataInstalacao")
+                    b.Property<string>("ClienteId")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(10)");
+                        .HasMaxLength(36)
+                        .HasColumnType("NVARCHAR2(36)")
+                        .HasColumnName("CLIENTE_ID");
+
+                    b.Property<DateTime>("DataInstalacao")
+                        .HasColumnType("DATE")
+                        .HasColumnName("DATA_INSTALACAO");
 
                     b.Property<string>("NomeInstalacao")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR2(200)")
+                        .HasColumnName("NOME_INSTALACAO");
 
                     b.Property<int>("PotenciaTotal")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnName("POTENCIA_TOTAL");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)")
+                        .HasColumnName("STATUS");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
 
                     b.ToTable("SM_SISTEMA", (string)null);
+                });
+
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Cliente", b =>
+                {
+                    b.HasOne("SolarMetrics.Infrastructure.Persistence.Entitites.Login", "Login")
+                        .WithOne("Cliente")
+                        .HasForeignKey("SolarMetrics.Infrastructure.Persistence.Entitites.Cliente", "UsuarioUsername");
+
+                    b.Navigation("Login");
+                });
+
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.LoginRole", b =>
+                {
+                    b.HasOne("SolarMetrics.Infrastructure.Persistence.Entitites.Login", "Login")
+                        .WithMany("Roles")
+                        .HasForeignKey("SmLoginUsername")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Login");
                 });
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Monitoramento", b =>
@@ -203,11 +379,17 @@ namespace SolarMetrics.Migrations
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Sensor", b =>
                 {
+                    b.HasOne("SolarMetrics.Infrastructure.Persistence.Entitites.SensorLogin", "SensorLogin")
+                        .WithOne("Sensor")
+                        .HasForeignKey("SolarMetrics.Infrastructure.Persistence.Entitites.Sensor", "SensorLoginUsername");
+
                     b.HasOne("SolarMetrics.Infrastructure.Persistence.Entitites.Sistema", "Sistema")
                         .WithMany("Sensores")
                         .HasForeignKey("SistemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("SensorLogin");
 
                     b.Navigation("Sistema");
                 });
@@ -228,9 +410,21 @@ namespace SolarMetrics.Migrations
                     b.Navigation("Sistemas");
                 });
 
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Login", b =>
+                {
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Roles");
+                });
+
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Sensor", b =>
                 {
                     b.Navigation("Monitoramentos");
+                });
+
+            modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.SensorLogin", b =>
+                {
+                    b.Navigation("Sensor");
                 });
 
             modelBuilder.Entity("SolarMetrics.Infrastructure.Persistence.Entitites.Sistema", b =>

@@ -1,0 +1,45 @@
+@model SistemaFormViewModel
+@{
+    ViewData["Title"] = "Novo sistema";
+}
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="NomeInstalacao" class="form-label"></label>
+            <input asp-for="NomeInstalacao" class="form-control"/>
+            <span asp-validation-for="NomeInstalacao" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="ClienteId" class="form-label">Cliente</label>
+            <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.ClienteId">
+                <option value="">Selecione...</option>
+            </select>
+            <span asp-validation-for="ClienteId" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="DataInstalacao" class="form-label"></label>
+            <input asp-for="DataInstalacao" class="form-control" type="date"/>
+            <span asp-validation-for="DataInstalacao" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PotenciaTotal" class="form-label"></label>
+            <input asp-for="PotenciaTotal" class="form-control" type="number"/>
+            <span asp-validation-for="PotenciaTotal" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Status" class="form-label"></label>
+            <input asp-for="Status" class="form-control" maxlength="20"/>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
+}

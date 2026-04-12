@@ -1,27 +1,82 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SolarMetrics.Web;
+using SolarMetrics.Web.Auth;
+using SolarMetrics.Web.Configuration;
 using SolarMetrics.Web.Repositories;
+using SolarMetrics.Web.Services;
 using SolarMetrics.Web.UseCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(ApiSettings.SectionName));
 
 builder.Services.AddDbContext<SolarMetricsContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("OracleDb"))
 );
 
+var jwtSection = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>() ?? new JwtSettings();
+if (string.IsNullOrWhiteSpace(jwtSection.Key))
+    throw new InvalidOperationException($"Configure '{JwtSettings.SectionName}:Key' via appsettings ou User Secrets.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection.Issuer,
+            ValidAudience = jwtSection.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.Key))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue(AdminAuthCookie.Name, out var token))
+                    context.Token = token;
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                var returnUrl = Uri.EscapeDataString(context.Request.Path + context.Request.QueryString);
+                context.Response.Redirect("/Account/Login?returnUrl=" + returnUrl);
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<LocalJwtIssuer>();
+builder.Services.AddScoped<AdminTokenAcquisitionService>();
+
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IClienteUseCase, ClienteUseCase>();
+builder.Services.AddScoped<ISistemaRepository, SistemaRepository>();
+builder.Services.AddScoped<ISistemaUseCase, SistemaUseCase>();
+builder.Services.AddScoped<IPainelSolarRepository, PainelSolarRepository>();
+builder.Services.AddScoped<IPainelSolarUseCase, PainelSolarUseCase>();
+builder.Services.AddScoped<ISensorRepository, SensorRepository>();
+builder.Services.AddScoped<ISensorUseCase, SensorUseCase>();
+builder.Services.AddScoped<IMonitoramentoRepository, MonitoramentoRepository>();
+builder.Services.AddScoped<IMonitoramentoUseCase, MonitoramentoUseCase>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -29,7 +84,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

@@ -1,0 +1,40 @@
+@model SensorFormViewModel
+@{
+    ViewData["Title"] = "Novo sensor";
+}
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="SistemaId" class="form-label">Sistema</label>
+            <select asp-for="SistemaId" class="form-select" asp-items="ViewBag.SistemaId">
+                <option value="">Selecione...</option>
+            </select>
+            <span asp-validation-for="SistemaId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Tipo" class="form-label"></label>
+            <input asp-for="Tipo" class="form-control"/>
+            <span asp-validation-for="Tipo" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Status" class="form-label"></label>
+            <input asp-for="Status" class="form-control"/>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Localizacao" class="form-label"></label>
+            <input asp-for="Localizacao" class="form-control"/>
+            <span asp-validation-for="Localizacao" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
+}

@@ -1,0 +1,18 @@
+@model SolarMetrics.Web.Models.Sensor
+@{
+    ViewData["Title"] = "Sensor";
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Tipo</dt>
+    <dd class="col-sm-9">@Model.Tipo</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">Sistema</dt>
+    <dd class="col-sm-9">@Model.Sistema.NomeInstalacao (@Model.Sistema.Cliente.Nome)</dd>
+    <dt class="col-sm-3">Localização</dt>
+    <dd class="col-sm-9">@(Model.Localizacao ?? "—")</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>

@@ -1,0 +1,47 @@
+@model IReadOnlyList<SolarMetrics.Web.Models.Sistema>
+@{
+    ViewData["Title"] = "Sistemas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">Instalações vinculadas a clientes</p>
+    <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>Novo sistema</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+                <th>Instalação</th>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Potência (W)</th>
+                <th>Status</th>
+                <th class="text-end">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.NomeInstalacao</td>
+                    <td>@s.Cliente.Nome</td>
+                    <td>@s.DataInstalacao.ToString("dd/MM/yyyy")</td>
+                    <td>@s.PotenciaTotal</td>
+                    <td><span class="badge bg-secondary">@s.Status</span></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@s.Id">Ver</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@s.Id">Editar</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@s.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="p-4 text-center text-muted">Nenhum sistema cadastrado.</div>
+    }
+</div>

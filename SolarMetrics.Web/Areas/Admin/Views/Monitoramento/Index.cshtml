@@ -1,0 +1,49 @@
+@model IReadOnlyList<SolarMetrics.Web.Models.Monitoramento>
+@{
+    ViewData["Title"] = "Monitoramentos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">Leituras por sensor</p>
+    <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>Novo monitoramento</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+                <th>Período</th>
+                <th>Sensor</th>
+                <th>Sistema</th>
+                <th>Valor</th>
+                <th>Média</th>
+                <th>Máx.</th>
+                <th class="text-end">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td>@m.Periodo.ToString("dd/MM/yyyy")</td>
+                    <td>@m.Sensor.Tipo</td>
+                    <td>@m.Sensor.Sistema.NomeInstalacao</td>
+                    <td>@m.ValorLido</td>
+                    <td>@m.MediaLeitura</td>
+                    <td>@m.MaximaLeitura</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@m.Id">Ver</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@m.Id">Editar</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@m.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="p-4 text-center text-muted">Nenhum monitoramento cadastrado.</div>
+    }
+</div>

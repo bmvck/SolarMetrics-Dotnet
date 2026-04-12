@@ -1,0 +1,49 @@
+@model PainelSolarFormViewModel
+@{
+    ViewData["Title"] = "Editar painel solar";
+}
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="SistemaId" class="form-label">Sistema</label>
+            <select asp-for="SistemaId" class="form-select" asp-items="ViewBag.SistemaId"></select>
+            <span asp-validation-for="SistemaId" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Modelo" class="form-label"></label>
+            <input asp-for="Modelo" class="form-control"/>
+            <span asp-validation-for="Modelo" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Fabricante" class="form-label"></label>
+            <input asp-for="Fabricante" class="form-control"/>
+            <span asp-validation-for="Fabricante" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PotenciaMaxima" class="form-label"></label>
+            <input asp-for="PotenciaMaxima" class="form-control" type="number"/>
+            <span asp-validation-for="PotenciaMaxima" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="DataFabricacao" class="form-label"></label>
+            <input asp-for="DataFabricacao" class="form-control" type="date"/>
+            <span asp-validation-for="DataFabricacao" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Eficiencia" class="form-label"></label>
+            <input asp-for="Eficiencia" class="form-control" type="number" min="0" max="100"/>
+            <span asp-validation-for="Eficiencia" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
+}

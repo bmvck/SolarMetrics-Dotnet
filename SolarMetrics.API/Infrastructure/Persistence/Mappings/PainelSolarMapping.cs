@@ -9,26 +9,44 @@ public class PainelSolarMapping : IEntityTypeConfiguration<PainelSolar>
     public void Configure(EntityTypeBuilder<PainelSolar> b)
     {
         b.ToTable("SM_PAINEL_SOLAR");
-        
-        // PK
+
         b.HasKey(x => x.Id);
-        
+
         b.Property(x => x.Id)
-            .ValueGeneratedNever();
-        
+            .ValueGeneratedNever()
+            .HasColumnName("ID")
+            .AsOracleUuid36();
+
         b.Property(x => x.Modelo)
-            .HasMaxLength(200);
+            .IsRequired()
+            .HasMaxLength(100)
+            .HasColumnName("MODELO");
 
         b.Property(x => x.Fabricante)
-            .HasMaxLength(200);
-        
-        b.Property(x => x.PotenciaMaxima)
-            .IsRequired();
-        
-        b.Property(x => x.DataFabricacao)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100)
+            .HasColumnName("FABRICANTE");
 
-        b.Property(x => x.Eficiencia);
-        
+        b.Property(x => x.PotenciaMaxima)
+            .IsRequired()
+            .HasColumnName("POTENCIA_MAXIMA");
+
+        b.Property(x => x.DataFabricacao)
+            .IsRequired()
+            .HasColumnName("DATA_FABRICACAO")
+            .HasColumnType("DATE");
+
+        b.Property(x => x.Eficiencia)
+            .IsRequired()
+            .HasColumnName("EFICIENCIA");
+
+        b.Property(x => x.SistemaId)
+            .HasColumnName("SISTEMA_ID")
+            .AsOracleUuid36();
+
+        b.HasOne(x => x.Sistema)
+            .WithMany(x => x.PaineisSolares)
+            .HasForeignKey(x => x.SistemaId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

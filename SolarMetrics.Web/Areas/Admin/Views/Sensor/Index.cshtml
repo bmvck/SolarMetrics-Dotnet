@@ -1,0 +1,45 @@
+@model IReadOnlyList<SolarMetrics.Web.Models.Sensor>
+@{
+    ViewData["Title"] = "Sensores";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">Sensores por sistema</p>
+    <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>Novo sensor</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th>Sistema</th>
+                <th>Localização</th>
+                <th class="text-end">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Tipo</td>
+                    <td><span class="badge bg-secondary">@s.Status</span></td>
+                    <td>@s.Sistema.NomeInstalacao</td>
+                    <td>@(s.Localizacao ?? "—")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@s.Id">Ver</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@s.Id">Editar</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@s.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="p-4 text-center text-muted">Nenhum sensor cadastrado.</div>
+    }
+</div>

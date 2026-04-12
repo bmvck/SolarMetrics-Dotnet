@@ -1,0 +1,61 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-lg">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <small class="text-muted">Clientes</small>
+                <p class="h3 mb-0">@Model.TotalClientes</p>
+                <i class="fas fa-users text-primary position-absolute top-0 end-0 m-3 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <small class="text-muted">Sistemas</small>
+                <p class="h3 mb-0">@Model.TotalSistemas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <small class="text-muted">Painéis</small>
+                <p class="h3 mb-0">@Model.TotalPaineis</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <small class="text-muted">Sensores</small>
+                <p class="h3 mb-0">@Model.TotalSensores</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <small class="text-muted">Monitoramentos</small>
+                <p class="h3 mb-0">@Model.TotalMonitoramentos</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <p class="text-muted mb-2">Acesso rápido</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-area="Admin" asp-controller="Cliente" asp-action="Index" class="btn btn-outline-primary btn-sm">Clientes</a>
+            <a asp-area="Admin" asp-controller="Sistema" asp-action="Index" class="btn btn-outline-primary btn-sm">Sistemas</a>
+            <a asp-area="Admin" asp-controller="PainelSolar" asp-action="Index" class="btn btn-outline-primary btn-sm">Painéis</a>
+            <a asp-area="Admin" asp-controller="Sensor" asp-action="Index" class="btn btn-outline-primary btn-sm">Sensores</a>
+            <a asp-area="Admin" asp-controller="Monitoramento" asp-action="Index" class="btn btn-outline-primary btn-sm">Monitoramentos</a>
+        </div>
+    </div>
+</div>

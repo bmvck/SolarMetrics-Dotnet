@@ -1,0 +1,20 @@
+@model SolarMetrics.Web.Models.Monitoramento
+@{
+    ViewData["Title"] = "Monitoramento";
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Período</dt>
+    <dd class="col-sm-9">@Model.Periodo.ToString("dd/MM/yyyy")</dd>
+    <dt class="col-sm-3">Sensor</dt>
+    <dd class="col-sm-9">@Model.Sensor.Tipo — @Model.Sensor.Sistema.NomeInstalacao</dd>
+    <dt class="col-sm-3">Valor lido</dt>
+    <dd class="col-sm-9">@Model.ValorLido</dd>
+    <dt class="col-sm-3">Média</dt>
+    <dd class="col-sm-9">@Model.MediaLeitura</dd>
+    <dt class="col-sm-3">Máxima</dt>
+    <dd class="col-sm-9">@Model.MaximaLeitura</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>

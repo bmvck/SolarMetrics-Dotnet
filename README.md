@@ -1,16 +1,35 @@
 
 ![Logo](banner.jpg)
-# SolarMetrics - API em .NET
 
-**SolarMetrics** é uma API desenvolvida para monitoramento e análise de energia solar, fornecendo dados em tempo real sobre sensores, usuários e ocupação de sistemas. A aplicação permite integrar sensores IoT, gerar relatórios e fornecer dados para aplicativos móveis ou dashboards web. Nosso objetivo é fornecer uma solução confiável para monitoramento inteligente de energia solar, auxiliando residências e empresas a otimizarem o consumo e gerarem insights a partir dos dados coletados.
+# SolarMetrics — Solução .NET
+
+**SolarMetrics** é uma solução para monitoramento e análise de energia solar: uma **Web API** (dados e integração) e uma **aplicação web MVC** (painel administrativo e fluxos de negócio). O objetivo é integrar sensores IoT, consolidar informações em banco e oferecer visibilidade sobre geração, sistemas e monitoramento — com base confiável para residências e empresas otimizarem consumo e insights.
+
+## O que há na solução
+
+| Projeto | Função |
+|--------|--------|
+| **SolarMetrics.API** | ASP.NET Core Web API — clientes, autenticação JWT, health checks, observabilidade (Serilog, OpenTelemetry). |
+| **SolarMetrics.Web** | ASP.NET Core MVC — áreas **Admin** (dashboard e CRUD de entidades), **Vendas**, autenticação via cookie JWT e acesso ao Oracle via EF Core. |
+| **SolarMetrics.UnitTests** | Testes unitários (xUnit, Moq). |
+| **SolarMetrics.IntegrationTests** | Testes de integração da API (`WebApplicationFactory`, SQLite em memória). |
+
+SDK alvo: **.NET 8** (veja `global.json` — versão pinada `8.0.400` com `rollForward`).
 
 ## Novidades (Sprint 3 — .NET)
 
 - **Health checks** (`Microsoft.Extensions.Diagnostics.HealthChecks`): verificação do banco via EF Core e de um **serviço HTTP externo** configurável (`HealthChecks:ExternalUrl`). Endpoints documentados abaixo.
 - **Logging estruturado** com **Serilog** (console + arquivo em `logs/`), níveis configuráveis e **correlação de requisições** via header `X-Correlation-Id`.
 - **OpenTelemetry**: tracing e métricas da API (ASP.NET Core, HTTP client, runtime), com exportação para **console** (adequado para desenvolvimento e demonstração).
-- **Autenticação JWT** nos endpoints de cliente; em ambientes não produtivos use `POST /auth/token` para obter um bearer e testar no Swagger.
-- **Testes automatizados**: projeto **SolarMetrics.UnitTests** (xUnit + Moq, padrão AAA) e **SolarMetrics.IntegrationTests** (`WebApplicationFactory`, SQLite em memória, JWT nos cenários protegidos).
+- **Autenticação JWT** nos endpoints da API; em ambientes não produtivos use `POST /auth/token` para obter um bearer e testar no Swagger.
+- **SolarMetrics.Web**: painel **Admin** (Dashboard, Clientes, Sistemas, Painéis solares, Sensores, Monitoramentos), área **Vendas**, login em `/Account/Login` com JWT armazenado em cookie; em desenvolvimento, se a API não estiver disponível, pode ser usado emissor local de token (`LocalJwtIssuer`) como fallback.
+- **Testes automatizados**: **SolarMetrics.UnitTests** e **SolarMetrics.IntegrationTests** (JWT nos cenários protegidos da API).
+
+## Interface web (SolarMetrics.Web)
+
+- **URLs de desenvolvimento** (perfil padrão): `http://localhost:5106` (HTTPS alternativo em `https://localhost:7242` — veja `SolarMetrics.Web/Properties/launchSettings.json`).
+- **Área Admin** (ex.: `/Admin/Dashboard`): requer usuário autenticado; o token JWT é obtido da API em `POST {Api:BaseUrl}/auth/token` (configurável; padrão `http://localhost:5090`) ou, em **Development**, via fallback local se a API não responder.
+- **Configuração**: `Api:BaseUrl`, `Jwt` (mesma chave/issuer/audience coerentes com a API para validação do cookie) e `ConnectionStrings:OracleDb` — preferir **User Secrets** para dados sensíveis.
 
 ## Monitoramento e health checks
 
@@ -46,57 +65,51 @@ dotnet test SolarMetrics.UnitTests/SolarMetrics.UnitTests.csproj
 dotnet test SolarMetrics.IntegrationTests/SolarMetrics.IntegrationTests.csproj
 ```
 
-- **Unitários**: `MetodoTestado_Cenario_ResultadoEsperado` em `ClienteUseCase` (camada de aplicação) e `EmailFormatoRegra` (domínio).
-- **Integração**: compartilham uma `WebApplicationFactory` via **Collection Fixture** xUnit; antes de cada teste o banco SQLite em memória é limpo para isolar cenários. Inclui **401** sem token, **204/201/404/409** com JWT.
+- **Unitários**: padrão AAA em casos de uso e regras de domínio (ex.: cliente).
+- **Integração**: `WebApplicationFactory` com **Collection Fixture** xUnit; banco SQLite em memória limpo entre testes. Inclui **401** sem token, **204/201/404/409** com JWT na API.
 
 ## Novidades anteriores da aplicação
 
-- Implementação de uma **interface Web** moderna para monitoramento e gestão.  
-- Integração da **WebAPI** com a interface web, permitindo interação em tempo real.  
-- Visualização de dados de sensores, relatórios e estatísticas diretamente no navegador.  
+- Interface web para monitoramento e gestão integrada à API.
+- Visualização e cadastro de dados relacionados a sensores e sistemas no painel administrativo.
 
-## Requisitos Funcionais
+## Requisitos funcionais (visão geral)
 
-- Cadastro e gerenciamento de clientes e usuários.  
-- Integração com sensores IoT para captura de dados de energia e ocupação.  
-- Geração de relatórios detalhados sobre consumo, geração e ocupação.  
-- Consulta de dados históricos e em tempo real.  
-- Atualização e sincronização de informações entre backend e aplicativos móveis.
+- Cadastro e gerenciamento de clientes e dados de sistemas solares.
+- Integração com sensores para captura de dados de energia e monitoramento.
+- Consulta de dados e operação via API e interface web.
 
-## Requisitos Não Funcionais
+## Requisitos não funcionais (visão geral)
 
-- **Desempenho:** O sistema deve processar e disponibilizar dados em tempo real com latência mínima.  
-- **Segurança:** Proteção de dados sensíveis, autenticação e autorização de usuários.  
-- **Disponibilidade:** Sistema deve possuir alta disponibilidade (mínimo 99,5%) para acesso contínuo.  
-- **Escalabilidade:** Capacidade de suportar aumento no número de sensores e usuários sem perda de performance.  
-- **Manutenibilidade:** Código e arquitetura organizados para facilitar atualizações e correções.  
-- **Compatibilidade:** Suporte a múltiplos dispositivos móveis e integração com diferentes sensores IoT.  
-- **Confiabilidade:** Garantir integridade dos dados capturados e armazenados, evitando perdas ou inconsistências.  
+- **Desempenho:** baixa latência para operações em tempo real quando aplicável.
+- **Segurança:** proteção de dados, autenticação e autorização (API JWT; Web com cookie HttpOnly).
+- **Disponibilidade e escalabilidade:** arquitetura preparada para crescimento de sensores e usuários.
+- **Manutenibilidade:** camadas e testes automatizados na API.
 
-## Problemas que a aplicação resolve
+## Problemas que a aplicação ajuda a endereçar
 
-- Falta de visibilidade sobre a geração e consumo de energia solar.  
-- Dificuldade em monitorar ocupação e eficiência de sistemas.  
-- Necessidade de relatórios detalhados para tomada de decisão.  
-- Integração limitada entre diferentes sistemas de IoT e aplicações móveis.
+- Falta de visibilidade sobre geração e consumo de energia solar.
+- Necessidade de centralizar cadastros e monitoramento em um painel web e em uma API consumível.
 
 ## Sobre o time
 
-- **Édipo Borges de Carvalho RM:567164**: Responsável pelo banco de dados e Compliance QA.  
-- **Carlos Clementino RM:561187**: Responsável pelo desenvolvimento da API em .NET e Java Spring Boot, infraestrutura e práticas de DevOps, e pela integração com dispositivos IoT.  
+- **Édipo Borges de Carvalho RM:567164**: Responsável pelo banco de dados e Compliance QA.
+- **Carlos Clementino RM:561187**: Responsável pelo desenvolvimento da API em .NET e Java Spring Boot, infraestrutura e práticas de DevOps, e pela integração com dispositivos IoT.
 - **Eder Silva RM:559647**: Responsável pela criação do APP mobile.
 
 ## Como rodar a aplicação
 
 ### Pré-requisitos
 
-- .NET 8 SDK ou superior (repositório direcionado a `net8.0`; veja `global.json`)  
-- IDE recomendada: **Rider** ou **Visual Studio**  
-- Oracle Database (para execução completa contra o banco de curso; testes de integração usam SQLite em memória)
+- **.NET 8 SDK** (recomendado alinhar ao `global.json`: `8.0.400` ou compatível com `rollForward`).
+- IDE: **Rider**, **Visual Studio** ou **VS Code**.
+- **Oracle Database** para execução completa (connection string + wallet quando aplicável). Os testes de integração da **API** usam **SQLite em memória**.
 
 ### Configuração sensível
 
-Não commite senhas. Use **User Secrets** na API:
+Não commite senhas. Use **User Secrets** na API e na Web:
+
+**API:**
 
 ```bash
 cd SolarMetrics.API
@@ -105,23 +118,45 @@ dotnet user-secrets set "ConnectionStrings:OracleDb" "sua_connection_string"
 dotnet user-secrets set "Jwt:Key" "sua_chave_forte_com_pelo_menos_32_caracteres"
 ```
 
-O arquivo `appsettings.json` contém apenas **placeholders** de exemplo.
+**Web** (JWT e Oracle devem ser coerentes com o ambiente; `Api:BaseUrl` deve apontar para a API em execução):
+
+```bash
+cd SolarMetrics.Web
+dotnet user-secrets init
+dotnet user-secrets set "ConnectionStrings:OracleDb" "sua_connection_string"
+dotnet user-secrets set "Jwt:Key" "mesma_chave_usada_na_api"
+dotnet user-secrets set "Api:BaseUrl" "http://localhost:5090"
+```
+
+Os arquivos `appsettings.json` contêm apenas **placeholders** ou valores de exemplo para desenvolvimento.
 
 ### Passos para executar
 
-1. Clone o repositório:  
+1. Clone o repositório:
+
 ```bash
 git clone https://github.com/ARC-ceo/SolarMetrics-Dotnet.git
 ```
 
 2. Abra a solução `SolarMetrics.sln`.
 
-3. Execute a API:  
+3. **API** (Swagger na raiz em desenvolvimento):
+
 ```bash
 dotnet run --project SolarMetrics.API
 ```
 
-4. A API costuma responder em `http://localhost:5090` (veja `launchSettings.json`).
+- HTTP: `http://localhost:5090` (HTTPS: `https://localhost:7113` — veja `SolarMetrics.API/Properties/launchSettings.json`).
+
+4. **Web** (em outro terminal):
+
+```bash
+dotnet run --project SolarMetrics.Web
+```
+
+- HTTP: `http://localhost:5106`.
+
+Para o login do Admin obter o JWT pela API, suba a **API** antes ou confie no comportamento de **Development** descrito na seção da interface web.
 
 ### Testando a API
 
@@ -131,7 +166,7 @@ dotnet run --project SolarMetrics.API
 
 ## Diagramas
 
-### Modelo Físico
+### Modelo físico
 
 ![Arquitetura](MER.png)
 
@@ -142,30 +177,31 @@ Assista ao vídeo explicando a proposta tecnológica, o público-alvo e os probl
 
 ## Endpoints da API
 
-A API foi documentada com **Swagger / OpenAPI**, oferecendo exemplos completos de requisição e resposta.
+A API é documentada com **Swagger / OpenAPI**.
 
 ### Endpoints principais
 
 | Método | Endpoint       | Descrição                                    |
 |--------|----------------|---------------------------------------------|
 | POST   | /auth/token    | Obter JWT (indisponível em Produção)        |
-| GET    | /Cliente       | Listar todos clientes cadastrados           |
-| PUT    | /Cliente       | Atualizar cadastro do cliente               |
-| POST   | /Cliente       | Criar cadastro do cliente                   |
-| GET    | /Cliente/{id}  | Buscar cadastro do cliente                  |
-| DELETE | /Cliente/{id}  | Deletar cadastro do cliente                 |
+| GET    | /Cliente       | Listar clientes                             |
+| PUT    | /Cliente       | Atualizar cliente                           |
+| POST   | /Cliente       | Criar cliente                               |
+| GET    | /Cliente/{id}  | Buscar cliente por id                       |
+| DELETE | /Cliente/{id}  | Remover cliente                             |
 | GET    | /health*       | Health / ready / live                       |
 
-> Para todos os endpoints de negócio, exemplos detalhados estão no **Swagger UI**.
+> Detalhes e exemplos completos estão no **Swagger UI** da API.
 
 ## Tecnologias utilizadas
 
-- .NET 8 / C#  
-- ASP.NET Core Web API  
-- Entity Framework Core  
-- Oracle Database  
-- Swagger / OpenAPI  
-- Serilog, OpenTelemetry, xUnit, Moq  
+- .NET 8 / C#
+- ASP.NET Core Web API e ASP.NET Core MVC (Razor)
+- Entity Framework Core
+- Oracle Database
+- Swagger / OpenAPI
+- Autenticação JWT (API e validação na Web)
+- Serilog, OpenTelemetry, xUnit, Moq
 
 ---
 

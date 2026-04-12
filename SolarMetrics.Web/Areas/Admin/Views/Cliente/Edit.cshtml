@@ -1,0 +1,52 @@
+@model SolarMetrics.Web.ViewModels.ClienteUpdateViewModel
+
+@{
+    ViewData["Title"] = "Editar cliente";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" asp-route-id="@Model.Id">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="Id"/>
+
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label"></label>
+                <input asp-for="Nome" class="form-control"/>
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Telefone" class="form-label"></label>
+                <input asp-for="Telefone" class="form-control"/>
+                <span asp-validation-for="Telefone" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TipoUsuario" class="form-label"></label>
+                <select asp-for="TipoUsuario" class="form-select">
+                    <option value="">Selecione um tipo</option>
+                    <option value="Residencial">Residencial</option>
+                    <option value="Comercial">Comercial</option>
+                </select>
+                <span asp-validation-for="TipoUsuario" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
+}

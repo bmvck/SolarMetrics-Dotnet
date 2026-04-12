@@ -5,3 +5,7 @@ logs/
 .idea/
 *.user
 *.suo
+
+# Oracle Autonomous: wallet descompactado e arquivos de credencial local
+.oracle-wallet/
+Wallet_*.zip

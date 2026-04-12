@@ -1,0 +1,22 @@
+@model SolarMetrics.Web.Models.PainelSolar
+@{
+    ViewData["Title"] = "Painel solar";
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Modelo</dt>
+    <dd class="col-sm-9">@Model.Modelo</dd>
+    <dt class="col-sm-3">Fabricante</dt>
+    <dd class="col-sm-9">@Model.Fabricante</dd>
+    <dt class="col-sm-3">Sistema</dt>
+    <dd class="col-sm-9">@Model.Sistema.NomeInstalacao (@Model.Sistema.Cliente.Nome)</dd>
+    <dt class="col-sm-3">Potência máxima</dt>
+    <dd class="col-sm-9">@Model.PotenciaMaxima W</dd>
+    <dt class="col-sm-3">Data fabricação</dt>
+    <dd class="col-sm-9">@Model.DataFabricacao.ToString("dd/MM/yyyy")</dd>
+    <dt class="col-sm-3">Eficiência</dt>
+    <dd class="col-sm-9">@Model.Eficiencia %</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>

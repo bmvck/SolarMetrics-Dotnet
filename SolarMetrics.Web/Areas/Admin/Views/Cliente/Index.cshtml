@@ -1,0 +1,55 @@
+@model IEnumerable<SolarMetrics.Web.ViewModels.ClienteViewModel>
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">Cadastro de clientes</p>
+    <a asp-action="Create" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>Novo cliente</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">Nenhum cliente cadastrado</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Tipo</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td class="fw-medium">@cliente.Nome</td>
+                            <td>@cliente.Email</td>
+                            <td>@cliente.Telefone</td>
+                            <td>
+                                <span class="badge @(cliente.TipoUsuario == "Residencial" ? "bg-primary" : "bg-secondary")">
+                                    @cliente.TipoUsuario
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@cliente.Id">Ver</a>
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@cliente.Id">Editar</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@cliente.Id">Excluir</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

@@ -17,11 +17,12 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ms-auto gap-3">
+                <div class="navbar-nav ms-auto gap-2 align-items-center flex-wrap">
                     <a class="nav-link" href="#features">Recursos</a>
                     <a class="nav-link" href="#benefits">Benefícios</a>
                     <a class="nav-link" href="#contact">Contato</a>
-                    <a class="btn btn-primary" asp-controller="Cliente" asp-action="Index">Acessar Dashboard</a>
+                    <a class="btn btn-outline-primary" asp-controller="Vendas" asp-action="NovosClientes">Vendas - Novos Clientes</a>
+                    <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Acessar painel admin</a>
                 </div>
             </div>
         </div>
@@ -42,7 +43,8 @@
                     Acompanhe a geração de energia, economize mais e tome decisões inteligentes com nossa plataforma completa de monitoramento solar.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a asp-controller="Cliente" asp-action="Index" class="btn btn-primary btn-lg">Começar Agora</a>
+                    <a asp-controller="Vendas" asp-action="NovosClientes" class="btn btn-outline-primary btn-lg">Vendas - Novos Clientes</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">Começar agora</a>
                     <button type="button" class="btn btn-outline-secondary btn-lg" 
                             onclick="window.location.href='https://www.youtube.com/watch?v=Fcza8JBvsyw&t=2s'">
                         Ver Demonstração
@@ -170,7 +172,8 @@
             Junte-se a milhares de usuários que já estão economizando e monitorando sua energia solar de forma inteligente.
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a asp-controller="Cliente" asp-action="Index" class="btn btn-light btn-lg">Acessar Dashboard</a>
+            <a asp-controller="Vendas" asp-action="NovosClientes" class="btn btn-outline-light btn-lg">Vendas - Novos Clientes</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg">Acessar painel admin</a>
         </div>
     </div>
 </section>
