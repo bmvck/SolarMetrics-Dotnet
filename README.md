@@ -5,6 +5,9 @@
 
 **SolarMetrics** é uma solução para monitoramento e análise de energia solar: uma **Web API** (dados e integração) e uma **aplicação web MVC** (painel administrativo e fluxos de negócio). O objetivo é integrar sensores IoT, consolidar informações em banco e oferecer visibilidade sobre geração, sistemas e monitoramento — com base confiável para residências e empresas otimizarem consumo e insights.
 
+https://solarmetrics-web.azurewebsites.net/
+
+
 ## O que há na solução
 
 | Projeto | Função |
