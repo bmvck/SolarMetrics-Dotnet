@@ -29,15 +29,18 @@ public sealed class AccountController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(string? returnUrl, CancellationToken cancellationToken)
     {
-        var token = await tokenAcquisition.GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrEmpty(token))
+        var acquisition = await tokenAcquisition.GetAccessTokenAsync(cancellationToken);
+        if (string.IsNullOrEmpty(acquisition.Token))
         {
             ModelState.AddModelError(
                 string.Empty,
-                "Não foi possível obter o token. Em produção configure Api:BaseUrl e um endpoint de emissão de JWT válido.");
+                acquisition.FailureMessage
+                ?? "Não foi possível obter o token. Em produção configure Api:BaseUrl e um endpoint de emissão de JWT válido.");
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
+
+        var token = acquisition.Token;
 
         var minutes = Math.Max(5, _jwt.ExpirationMinutes);
         Response.Cookies.Append(AdminAuthCookie.Name, token, new CookieOptions

@@ -24,6 +24,20 @@ var jwtSection = builder.Configuration.GetSection(JwtSettings.SectionName).Get<J
 if (string.IsNullOrWhiteSpace(jwtSection.Key))
     throw new InvalidOperationException($"Configure '{JwtSettings.SectionName}:Key' via appsettings ou User Secrets.");
 
+var apiSection = builder.Configuration.GetSection(ApiSettings.SectionName).Get<ApiSettings>() ?? new ApiSettings();
+var apiBaseUrl = (apiSection.BaseUrl ?? string.Empty).Trim();
+if (builder.Environment.IsProduction())
+{
+    if (string.IsNullOrEmpty(apiBaseUrl))
+        throw new InvalidOperationException(
+            $"Em Production configure '{ApiSettings.SectionName}:BaseUrl' (App Service: Api__BaseUrl) com a URL HTTPS da SolarMetrics.API.");
+
+    if (apiBaseUrl.Contains("localhost", StringComparison.OrdinalIgnoreCase)
+        || apiBaseUrl.Contains("127.0.0.1", StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException(
+            $"Em Production '{ApiSettings.SectionName}:BaseUrl' não pode ser localhost. Defina Api__BaseUrl no App Service (ex.: https://solarmetrics-api-rm567164.azurewebsites.net).");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
