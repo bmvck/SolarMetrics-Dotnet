@@ -1,77 +1,77 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SolarMetrics.Domain;
 using SolarMetrics.Exceptions;
 using SolarMetrics.Infrastructure.Persistence.Entitites;
+using SolarMetrics.Infrastructure.Persistence.Queries;
 using SolarMetrics.Infrastructure.Persistence.Repositories;
 
 namespace SolarMetrics.UseCase;
 
-
-public class ClienteUseCase : IClienteUseCase
+public class ClienteUseCase(IClienteRepository clienteRepository) : IClienteUseCase
 {
-    private readonly IClienteRepository _clienteRepository;
-    
-    public ClienteUseCase(IClienteRepository clienteRepository)
+    public async Task<Cliente> CreateAsync(Cliente cliente, CancellationToken cancellationToken = default)
     {
-        _clienteRepository = clienteRepository;
-    }
-    
-    public async Task<Cliente> CreateAsync(Cliente cliente)
-    {
-        var existe = await _clienteRepository.FindEmailAsync(cliente.Email);
+        ValidarEmail(cliente.Email);
+        var existe = await clienteRepository.FindEmailAsync(cliente.Email, cancellationToken: cancellationToken);
         if (existe != null)
             throw new EmailDuplicadoException();
         try
         {
-            await _clienteRepository.AddAsync(cliente);
+            return await clienteRepository.AddAsync(cliente, cancellationToken);
         }
-        catch (DbUpdateException ex) 
-            when (ex.InnerException?.Message.Contains("UNIQUE") == true)
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE") == true)
         {
             throw new EmailDuplicadoException();
         }
-        return cliente; 
     }
 
-    public async Task<Cliente> UpdateAsync(Cliente cliente)
+    public async Task<Cliente> UpdateAsync(Cliente cliente, CancellationToken cancellationToken = default)
     {
-        var clienteExistente = await GetById(cliente.Id);
-        var result = await _clienteRepository.FindEmailAsync(cliente.Email,cliente.Id);
+        ValidarEmail(cliente.Email);
+        var clienteExistente = await GetById(cliente.Id, cancellationToken);
+        var result = await clienteRepository.FindEmailAsync(cliente.Email, cliente.Id, cancellationToken);
         if (result != null)
             throw new EmailDuplicadoException();
-        
+
         clienteExistente.Nome = cliente.Nome;
         clienteExistente.Email = cliente.Email;
         clienteExistente.Telefone = cliente.Telefone;
         clienteExistente.TipoUsuario = cliente.TipoUsuario;
-        
+
         try
         {
-            await _clienteRepository.SaveChangesAsync();
+            await clienteRepository.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateException ex) 
-            when (ex.InnerException?.Message.Contains("UNIQUE") == true)
+        catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("UNIQUE") == true)
         {
             throw new EmailDuplicadoException();
         }
-        return cliente; 
+
+        return clienteExistente;
     }
-    
-    public async Task<Cliente> GetById(Guid id)
+
+    public async Task<Cliente> GetById(Guid id, CancellationToken cancellationToken = default)
     {
-        var cliente = await _clienteRepository.GetByIdAsync(id);
+        var cliente = await clienteRepository.GetByIdAsync(id, cancellationToken);
         if (cliente == null)
             throw new ClienteNaoEncontradoException();
         return cliente;
     }
-    
-    public async Task DeleteAsync(Guid id)
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var cliente = await GetById(id);
-        await _clienteRepository.DeleteAsync(cliente);
+        var cliente = await GetById(id, cancellationToken);
+        await clienteRepository.DeleteAsync(cliente, cancellationToken);
     }
-    
-    public async Task<List<Cliente>> GetAllAsync()
+
+    public Task<(List<Cliente> Items, int TotalCount)> GetPagedAsync(
+        ClienteListQuery query,
+        CancellationToken cancellationToken = default) =>
+        clienteRepository.GetPagedAsync(query, cancellationToken);
+
+    private static void ValidarEmail(string email)
     {
-        return await _clienteRepository.GetAllAsync();
+        if (!EmailFormatoRegra.EhValido(email))
+            throw new ArgumentException("E-mail inválido.");
     }
 }

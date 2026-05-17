@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Assistente IA";
+    ViewData["ChatbotCompact"] = false;
+    ViewData["ChatbotPanelId"] = "chatbot-panel-page";
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="History" class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-history me-1"></i>Histórico de interações
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-10 col-xl-8">
+        <p class="text-muted mb-4">
+            Consulte o banco SolarMetrics em linguagem natural. O assistente usa
+            <strong>Oracle Select AI</strong> e <strong>OCI Generative AI</strong> sobre as tabelas autorizadas no ATP.
+        </p>
+        <partial name="_ChatbotPanel" />
+    </div>
+</div>

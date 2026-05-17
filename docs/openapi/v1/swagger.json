@@ -1,0 +1,102 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "SolarMetrics API",
+    "version": "v1",
+    "description": "API REST para monitoramento de energia solar. Sprint 4: paginação, filtros, HATEOAS, JWT, MongoDB (chatbot)."
+  },
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Obter JWT (dev/teste)",
+        "responses": { "200": { "description": "Token emitido" } }
+      }
+    },
+    "/Cliente": {
+      "get": {
+        "tags": ["Cliente"],
+        "summary": "Listar clientes (paginado, HATEOAS)",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string" } },
+          { "name": "sortDir", "in": "query", "schema": { "type": "string" } },
+          { "name": "nome", "in": "query", "schema": { "type": "string" } },
+          { "name": "email", "in": "query", "schema": { "type": "string" } },
+          { "name": "tipoUsuario", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "PagedResource com _links" } }
+      },
+      "post": { "tags": ["Cliente"], "summary": "Criar cliente", "responses": { "201": { "description": "Created" } } },
+      "put": { "tags": ["Cliente"], "summary": "Atualizar cliente", "responses": { "200": { "description": "OK" } } }
+    },
+    "/Cliente/{id}": {
+      "get": { "tags": ["Cliente"], "summary": "Buscar por id (HATEOAS)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "200": { "description": "ApiResource" } } },
+      "delete": { "tags": ["Cliente"], "summary": "Remover", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }], "responses": { "204": { "description": "No Content" } } }
+    },
+    "/Sistema": {
+      "get": { "tags": ["Sistema"], "summary": "Listar sistemas (paginado)" },
+      "post": { "tags": ["Sistema"], "summary": "Criar sistema" },
+      "put": { "tags": ["Sistema"], "summary": "Atualizar sistema" }
+    },
+    "/Sistema/{id}": {
+      "get": { "tags": ["Sistema"], "summary": "Buscar por id" },
+      "delete": { "tags": ["Sistema"], "summary": "Remover" }
+    },
+    "/PainelSolar": {
+      "get": { "tags": ["PainelSolar"], "summary": "Listar painéis" },
+      "post": { "tags": ["PainelSolar"], "summary": "Criar" },
+      "put": { "tags": ["PainelSolar"], "summary": "Atualizar" }
+    },
+    "/PainelSolar/{id}": {
+      "get": { "tags": ["PainelSolar"], "summary": "Buscar por id" },
+      "delete": { "tags": ["PainelSolar"], "summary": "Remover" }
+    },
+    "/Sensor": {
+      "get": { "tags": ["Sensor"], "summary": "Listar sensores" },
+      "post": { "tags": ["Sensor"], "summary": "Criar" },
+      "put": { "tags": ["Sensor"], "summary": "Atualizar" }
+    },
+    "/Sensor/{id}": {
+      "get": { "tags": ["Sensor"], "summary": "Buscar por id" },
+      "delete": { "tags": ["Sensor"], "summary": "Remover" }
+    },
+    "/Monitoramento": {
+      "get": { "tags": ["Monitoramento"], "summary": "Listar monitoramentos" },
+      "post": { "tags": ["Monitoramento"], "summary": "Criar" },
+      "put": { "tags": ["Monitoramento"], "summary": "Atualizar" }
+    },
+    "/Monitoramento/{id}": {
+      "get": { "tags": ["Monitoramento"], "summary": "Buscar por id" },
+      "delete": { "tags": ["Monitoramento"], "summary": "Remover" }
+    },
+    "/ChatbotInteracoes": {
+      "get": {
+        "tags": ["Chatbot"],
+        "summary": "Histórico paginado (MongoDB)",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Lista paginada" },
+          "503": { "description": "MongoDB desabilitado" }
+        }
+      }
+    },
+    "/health": { "get": { "tags": ["Health"], "summary": "Health check completo" } },
+    "/health/ready": { "get": { "tags": ["Health"], "summary": "Readiness" } },
+    "/health/live": { "get": { "tags": ["Health"], "summary": "Liveness" } }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [{ "Bearer": [] }]
+}

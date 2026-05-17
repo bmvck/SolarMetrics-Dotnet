@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/admin-chatbot.css" asp-append-version="true"/>
 </head>
 <body class="bg-light">
 <div class="d-flex min-vh-100">
@@ -44,6 +45,14 @@
                asp-area="@area" asp-controller="Monitoramento" asp-action="Index">
                 <i class="fas fa-wave-square me-2"></i>Monitoramentos
             </a>
+            <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Chatbot" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active bg-primary-subtle" : "")"
+               asp-area="@area" asp-controller="Chatbot" asp-action="Index">
+                <i class="fas fa-robot me-2"></i>Assistente IA
+            </a>
+            <a class="nav-link rounded @(ViewContext.RouteData.Values["controller"]?.ToString() == "Chatbot" && ViewContext.RouteData.Values["action"]?.ToString() == "History" ? "active bg-primary-subtle" : "")"
+               asp-area="@area" asp-controller="Chatbot" asp-action="History">
+                <i class="fas fa-history me-2"></i>Histórico IA
+            </a>
         </nav>
         <div class="p-3 mt-auto border-top small">
             <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm w-100 mb-2">Site público</a>
@@ -62,9 +71,36 @@
         </main>
     </div>
 </div>
+
+<button type="button"
+        class="btn btn-primary chatbot-fab d-flex align-items-center justify-content-center"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#chatbotOffcanvas"
+        aria-controls="chatbotOffcanvas"
+        title="Assistente IA Oracle">
+    <i class="fas fa-robot fa-lg"></i>
+</button>
+
+<div class="offcanvas offcanvas-end chatbot-offcanvas" tabindex="-1" id="chatbotOffcanvas" aria-labelledby="chatbotOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
+        <h2 class="offcanvas-title h5 mb-0" id="chatbotOffcanvasLabel">
+            <i class="fas fa-robot text-primary me-2"></i>Assistente IA
+        </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+    <div class="offcanvas-body">
+        @{
+            ViewData["ChatbotCompact"] = true;
+            ViewData["ChatbotPanelId"] = "chatbot-panel-widget";
+        }
+        <partial name="_ChatbotPanel" />
+    </div>
+</div>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/admin-chatbot.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

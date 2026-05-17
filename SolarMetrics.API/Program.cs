@@ -5,7 +5,7 @@ namespace SolarMetrics;
 
 public partial class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
@@ -30,6 +30,7 @@ public partial class Program
 
             builder.AddSolarMetrics();
             var app = builder.Build();
+            await app.EnsureMongoDbIndexesAsync();
             app.UseSolarMetricsPipeline();
             app.Run();
         }

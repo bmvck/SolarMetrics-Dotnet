@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SolarMetrics.Configuration;
+using SolarMetrics.Infrastructure.Mongo;
 using SolarMetrics.Infrastructure.Persistence.Repositories;
 using SolarMetrics.Middleware;
 using SolarMetrics.UseCase;
@@ -28,6 +29,9 @@ public static class WebApplicationBuilderExtensions
         };
         swaggerConfig.Servers ??= [];
         swaggerConfig.Contact ??= new OpenApiContact();
+
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -98,7 +102,16 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
         builder.Services.AddScoped<IClienteUseCase, ClienteUseCase>();
+        builder.Services.AddScoped<ISistemaRepository, SistemaRepository>();
+        builder.Services.AddScoped<ISistemaUseCase, SistemaUseCase>();
+        builder.Services.AddScoped<IPainelSolarRepository, PainelSolarRepository>();
+        builder.Services.AddScoped<IPainelSolarUseCase, PainelSolarUseCase>();
+        builder.Services.AddScoped<ISensorRepository, SensorRepository>();
+        builder.Services.AddScoped<ISensorUseCase, SensorUseCase>();
+        builder.Services.AddScoped<IMonitoramentoRepository, MonitoramentoRepository>();
+        builder.Services.AddScoped<IMonitoramentoUseCase, MonitoramentoUseCase>();
 
+        builder.Services.AddSolarMetricsMongoDb(builder.Configuration, builder.Environment);
         builder.Services.AddSolarMetricsObservability(builder.Configuration, builder.Environment);
 
         return builder;
@@ -118,6 +131,8 @@ public static class WebApplicationBuilderExtensions
                 ui.RoutePrefix = string.Empty;
             });
         }
+
+        app.UseExceptionHandler();
 
         app.UseHttpsRedirection();
         app.UseRouting();

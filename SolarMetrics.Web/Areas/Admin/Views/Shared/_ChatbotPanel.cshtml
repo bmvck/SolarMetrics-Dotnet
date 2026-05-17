@@ -1,0 +1,52 @@
+@{
+    var compact = ViewData["ChatbotCompact"] as bool? ?? false;
+    var panelId = ViewData["ChatbotPanelId"] as string ?? "chatbot-panel-main";
+    var askUrl = Url.Action("Ask", "Chatbot", new { area = "Admin" })!;
+}
+<div class="chatbot-panel d-flex flex-column @(compact ? "chatbot-panel--compact" : "chatbot-panel--full")"
+     id="@panelId"
+     data-chatbot-panel
+     data-ask-url="@askUrl">
+    <form class="d-none chatbot-antiforgery">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div class="chatbot-messages flex-grow-1 overflow-auto mb-3 border rounded bg-white p-3" aria-live="polite">
+        <div class="chatbot-welcome text-muted small">
+            <p class="mb-2">
+                <i class="fas fa-robot text-primary me-1"></i>
+                Assistente <strong>Oracle Select AI</strong> — pergunte sobre clientes, sistemas, painéis, sensores e monitoramentos.
+            </p>
+            @if (!compact)
+            {
+                <p class="mb-0">Exemplos:</p>
+            }
+        </div>
+        <div class="chatbot-suggestions d-flex flex-wrap gap-2 mt-2">
+            <button type="button" class="btn btn-outline-primary btn-sm chatbot-suggestion" data-question="Quantos sistemas solares existem cadastrados?">
+                Sistemas cadastrados
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-sm chatbot-suggestion" data-question="Liste os clientes cadastrados no SolarMetrics">
+                Listar clientes
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-sm chatbot-suggestion" data-question="Quantos sensores estão ativos?">
+                Sensores
+            </button>
+        </div>
+    </div>
+
+    <div class="chatbot-input-group">
+        <label class="form-label small text-muted mb-1" for="@(panelId)-input">Sua pergunta</label>
+        <div class="input-group">
+            <textarea class="form-control chatbot-input"
+                      id="@(panelId)-input"
+                      rows="@(compact ? 2 : 3)"
+                      placeholder="Ex.: Quais sistemas solares estão cadastrados?"
+                      maxlength="4000"></textarea>
+            <button type="button" class="btn btn-primary chatbot-send" title="Enviar">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="form-text">Respostas geradas com dados do Oracle ATP via IA generativa Oracle.</div>
+    </div>
+</div>

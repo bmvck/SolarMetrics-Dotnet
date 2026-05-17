@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SolarMetrics.Web;
 using SolarMetrics.Web.Auth;
 using SolarMetrics.Web.Configuration;
+using SolarMetrics.Web.Extensions;
 using SolarMetrics.Web.Repositories;
 using SolarMetrics.Web.Services;
 using SolarMetrics.Web.UseCase;
@@ -12,9 +13,12 @@ using SolarMetrics.Web.UseCase;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(ApiSettings.SectionName));
+builder.Services.Configure<ChatbotSettings>(builder.Configuration.GetSection(ChatbotSettings.SectionName));
+builder.Services.AddSolarMetricsMongoDb(builder.Configuration);
 
 builder.Services.AddDbContext<SolarMetricsContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("OracleDb"))
@@ -72,6 +76,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<IOracleChatbotService, OracleChatbotService>((sp, client) =>
+{
+    var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ChatbotSettings>>().Value;
+    var timeout = settings.TimeoutSeconds > 0 ? settings.TimeoutSeconds : 120;
+    client.Timeout = TimeSpan.FromSeconds(timeout);
+});
 builder.Services.AddSingleton<LocalJwtIssuer>();
 builder.Services.AddScoped<AdminTokenAcquisitionService>();
 
@@ -87,6 +97,8 @@ builder.Services.AddScoped<IMonitoramentoRepository, MonitoramentoRepository>();
 builder.Services.AddScoped<IMonitoramentoUseCase, MonitoramentoUseCase>();
 
 var app = builder.Build();
+
+await app.EnsureMongoDbIndexesAsync();
 
 if (!app.Environment.IsDevelopment())
 {

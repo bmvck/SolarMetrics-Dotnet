@@ -4,16 +4,18 @@ namespace SolarMetrics.DTOs;
 
 public class ClienteResponse
 {
-    public string Nome { get; set; }
-    public string TipoUsuario { get; set; }
-    
-    
-    public static ClienteResponse ToResponse(Cliente cliente)
+    public Guid Id { get; set; }
+    public string Nome { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string? Telefone { get; set; }
+    public string TipoUsuario { get; set; } = null!;
+
+    public static ClienteResponse ToResponse(Cliente cliente) => new()
     {
-        return new ClienteResponse
-        {
-            Nome = cliente.Nome,
-            TipoUsuario = cliente.TipoUsuario ?? string.Empty
-        };
-    }
+        Id = cliente.Id,
+        Nome = cliente.Nome,
+        Email = cliente.Email,
+        Telefone = cliente.Telefone,
+        TipoUsuario = cliente.TipoUsuario ?? string.Empty
+    };
 }

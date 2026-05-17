@@ -1,5 +1,6 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarMetrics.API", "SolarMetrics.API\SolarMetrics.API.csproj", "{A05AFC33-329E-4C70-9DD7-3403C30A6542}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarMetrics.Web", "SolarMetrics.Web\SolarMetrics.Web.csproj", "{53B0B602-9120-4FF5-9B60-21B86B0B0FDC}"
@@ -7,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarMetrics.UnitTests", "SolarMetrics.UnitTests\SolarMetrics.UnitTests.csproj", "{B2C4E8F1-3A5D-4E7B-9C0D-1E2F3A4B5C6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarMetrics.IntegrationTests", "SolarMetrics.IntegrationTests\SolarMetrics.IntegrationTests.csproj", "{C3D5F9A2-4B6E-5F8C-AD1E-2F3A4B5C6D7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarMetrics.Web.UnitTests", "SolarMetrics.Web.UnitTests\SolarMetrics.Web.UnitTests.csproj", "{A85911B6-2D3A-42C5-908E-217DE2BD6B89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +33,9 @@ Global
 		{C3D5F9A2-4B6E-5F8C-AD1E-2F3A4B5C6D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3D5F9A2-4B6E-5F8C-AD1E-2F3A4B5C6D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3D5F9A2-4B6E-5F8C-AD1E-2F3A4B5C6D7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A85911B6-2D3A-42C5-908E-217DE2BD6B89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A85911B6-2D3A-42C5-908E-217DE2BD6B89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A85911B6-2D3A-42C5-908E-217DE2BD6B89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A85911B6-2D3A-42C5-908E-217DE2BD6B89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

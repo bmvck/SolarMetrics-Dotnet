@@ -167,11 +167,24 @@ Para o login do Admin obter o JWT pela API, suba a **API** antes ou confie no co
 2. No Swagger, use **Authorize** e informe `Bearer {access_token}`.
 3. Documentação interativa: raiz da API em desenvolvimento (`/` → Swagger UI).
 
+## Arquitetura da solução
+
+Diagrama de componentes e camadas: [`docs/arquitetura-solucao.md`](docs/arquitetura-solucao.md).
+
+```mermaid
+flowchart LR
+  Web[SolarMetrics.Web] --> API[SolarMetrics.API]
+  API --> Oracle[(Oracle ATP)]
+  API --> Mongo[(MongoDB)]
+  Web --> Oracle
+  Web --> Mongo
+```
+
 ## Diagramas
 
-### Modelo físico
+### Modelo físico (MER)
 
-![Arquitetura](MER.png)
+![Modelo de dados](MER.png)
 
 ## Apresentação
 
@@ -180,21 +193,56 @@ Assista ao vídeo explicando a proposta tecnológica, o público-alvo e os probl
 
 ## Endpoints da API
 
-A API é documentada com **Swagger / OpenAPI**.
+Documentação interativa: **Swagger UI** na raiz da API em desenvolvimento. Export OpenAPI: [`docs/openapi/v1/swagger.json`](docs/openapi/v1/swagger.json).
+
+Todas as rotas de consulta (`GET` coleção e `GET` por id) retornam **HATEOAS** (`_links`: self, next, prev, update, delete, etc.).
+
+### Paginação, ordenação e filtros (listagens)
+
+Parâmetros comuns em `GET` de coleção:
+
+| Parâmetro | Descrição |
+|-----------|-----------|
+| `page` | Página (padrão 1) |
+| `pageSize` | Itens por página (padrão 20, máx. 100) |
+| `sortBy` | Campo de ordenação (whitelist por recurso) |
+| `sortDir` | `asc` ou `desc` |
+
+Filtros por recurso: `nome`, `email`, `tipoUsuario` (Cliente); `nomeInstalacao`, `status`, `clienteId` (Sistema); `modelo`, `fabricante`, `sistemaId` (PainelSolar); `tipo`, `status`, `sistemaId` (Sensor); `sensorId`, `periodo` (Monitoramento).
 
 ### Endpoints principais
 
-| Método | Endpoint       | Descrição                                    |
-|--------|----------------|---------------------------------------------|
-| POST   | /auth/token    | Obter JWT (indisponível em Produção)        |
-| GET    | /Cliente       | Listar clientes                             |
-| PUT    | /Cliente       | Atualizar cliente                           |
-| POST   | /Cliente       | Criar cliente                               |
-| GET    | /Cliente/{id}  | Buscar cliente por id                       |
-| DELETE | /Cliente/{id}  | Remover cliente                             |
-| GET    | /health*       | Health / ready / live                       |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/auth/token` | Obter JWT (fora de Produção) |
+| GET/POST/PUT/DELETE | `/Cliente`, `/Cliente/{id}` | CRUD clientes |
+| GET/POST/PUT/DELETE | `/Sistema`, `/Sistema/{id}` | CRUD sistemas |
+| GET/POST/PUT/DELETE | `/PainelSolar`, `/PainelSolar/{id}` | CRUD painéis |
+| GET/POST/PUT/DELETE | `/Sensor`, `/Sensor/{id}` | CRUD sensores |
+| GET/POST/PUT/DELETE | `/Monitoramento`, `/Monitoramento/{id}` | CRUD monitoramentos |
+| GET | `/ChatbotInteracoes` | Histórico paginado do chatbot (MongoDB) |
+| GET | `/health`, `/health/ready`, `/health/live` | Health checks |
 
-> Detalhes e exemplos completos estão no **Swagger UI** da API.
+### MongoDB na API
+
+```json
+"MongoDb": {
+  "Enabled": true,
+  "ConnectionString": "mongodb://localhost:27017",
+  "DatabaseName": "solarmetrics",
+  "ChatbotInteractionsCollection": "chatbot_interactions"
+}
+```
+
+Com `Enabled: false`, `GET /ChatbotInteracoes` retorna **503**. Use `docker compose up -d mongodb` na raiz do repositório para desenvolvimento.
+
+### Exportar OpenAPI
+
+```bash
+dotnet tool install --global Swashbuckle.AspNetCore.Cli
+cd SolarMetrics.API
+swagger tofile --output ../docs/openapi/v1/swagger.json bin/Debug/net8.0/SolarMetrics.API.dll v1
+```
 
 ## Tecnologias utilizadas
 
@@ -202,6 +250,7 @@ A API é documentada com **Swagger / OpenAPI**.
 - ASP.NET Core Web API e ASP.NET Core MVC (Razor)
 - Entity Framework Core
 - Oracle Database
+- MongoDB (histórico do chatbot)
 - Swagger / OpenAPI
 - Autenticação JWT (API e validação na Web)
 - Serilog, OpenTelemetry, xUnit, Moq

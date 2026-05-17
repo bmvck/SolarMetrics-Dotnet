@@ -40,15 +40,40 @@ public sealed class ClienteControllerIntegrationTests
     }
 
     [Fact]
-    public async Task GetAll_ComToken_ListaVazia_Retorna204NoContent()
+    public async Task GetAll_ComToken_ListaVazia_Retorna200ComEnvelopePaginado()
     {
         _factory.LimparBanco();
         var client = _factory.CreateClient();
         await AutenticarAsync(client);
 
-        var res = await client.GetAsync("/Cliente");
+        var res = await client.GetAsync("/Cliente?page=1&pageSize=10");
 
-        Assert.Equal(HttpStatusCode.NoContent, res.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        await using var stream = await res.Content.ReadAsStreamAsync();
+        var doc = await JsonDocument.ParseAsync(stream);
+        Assert.True(doc.RootElement.TryGetProperty("_links", out _));
+        Assert.Equal(0, doc.RootElement.GetProperty("totalCount").GetInt32());
+    }
+
+    [Fact]
+    public async Task GetCliente_ComToken_RetornaHateoasLinks()
+    {
+        _factory.LimparBanco();
+        var client = _factory.CreateClient();
+        await AutenticarAsync(client);
+        var email = $"hateoas_{Guid.NewGuid():N}@test.com";
+        var body = new { nome = "HATEOAS", email, telefone = "11988887777", tipoUsuario = "ADMIN" };
+        var create = await client.PostAsJsonAsync("/Cliente", body);
+        create.EnsureSuccessStatusCode();
+        using var createDoc = JsonDocument.Parse(await create.Content.ReadAsStringAsync());
+        var id = createDoc.RootElement.GetProperty("data").GetProperty("id").GetGuid();
+
+        var res = await client.GetAsync($"/Cliente/{id}");
+
+        res.EnsureSuccessStatusCode();
+        using var doc = JsonDocument.Parse(await res.Content.ReadAsStringAsync());
+        var links = doc.RootElement.GetProperty("_links");
+        Assert.True(links.GetArrayLength() >= 3);
     }
 
     [Fact]

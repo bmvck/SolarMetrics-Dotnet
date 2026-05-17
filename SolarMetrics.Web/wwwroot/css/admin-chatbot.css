@@ -1,0 +1,61 @@
+.chatbot-panel--full .chatbot-messages {
+    min-height: 320px;
+    max-height: 480px;
+}
+
+.chatbot-panel--compact .chatbot-messages {
+    min-height: 240px;
+    max-height: 360px;
+}
+
+.chatbot-bubble {
+    margin-bottom: 0.75rem;
+    max-width: 92%;
+}
+
+.chatbot-bubble--user {
+    margin-left: auto;
+}
+
+.chatbot-bubble--user .chatbot-bubble__text {
+    background: var(--bs-primary);
+    color: #fff;
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.chatbot-bubble--assistant .chatbot-bubble__text {
+    background: var(--bs-light);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem 1rem 1rem 0.25rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.chatbot-bubble--error .chatbot-bubble__text {
+    background: var(--bs-danger-bg-subtle, #f8d7da);
+    color: var(--bs-danger);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.chatbot-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1040;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chatbot-offcanvas .offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.chatbot-offcanvas .chatbot-panel {
+    flex: 1;
+    min-height: 0;
+}
