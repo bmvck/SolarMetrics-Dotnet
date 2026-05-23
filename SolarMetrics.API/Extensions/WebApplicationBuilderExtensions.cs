@@ -122,13 +122,13 @@ public static class WebApplicationBuilderExtensions
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseSerilogRequestLogging();
 
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
         {
             app.UseSwagger();
             app.UseSwaggerUI(ui =>
             {
                 ui.SwaggerEndpoint("/swagger/v1/swagger.json", "SolarMetrics.API v1");
-                ui.RoutePrefix = string.Empty;
+                ui.RoutePrefix = "swagger";
             });
         }
 

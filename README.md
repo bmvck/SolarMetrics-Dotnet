@@ -193,7 +193,7 @@ Assista ao vídeo explicando a proposta tecnológica, o público-alvo e os probl
 
 ## Endpoints da API
 
-Documentação interativa: **Swagger UI** na raiz da API em desenvolvimento. Export OpenAPI: [`docs/openapi/v1/swagger.json`](docs/openapi/v1/swagger.json).
+Documentação interativa: **Swagger UI** em `/swagger` (ambientes **Development** e **Staging**; desligado em **Production**). Export OpenAPI: [`docs/openapi/v1/swagger.json`](docs/openapi/v1/swagger.json).
 
 Todas as rotas de consulta (`GET` coleção e `GET` por id) retornam **HATEOAS** (`_links`: self, next, prev, update, delete, etc.).
 
