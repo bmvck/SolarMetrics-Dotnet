@@ -11,6 +11,7 @@ using SolarMetrics.Infrastructure.Persistence.Repositories;
 using SolarMetrics.Middleware;
 using SolarMetrics.UseCase;
 using SolarMetrics.Utils;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SolarMetrics.Extensions;
 
@@ -66,14 +67,7 @@ public static class WebApplicationBuilderExtensions
                 }
             });
 
-            foreach (var server in swaggerConfig.Servers)
-            {
-                swagger.AddServer(new OpenApiServer
-                {
-                    Url = server.Url,
-                    Description = server.Name
-                });
-            }
+            ConfigureSwaggerServers(swagger, builder.Environment, swaggerConfig);
         });
 
         var oracleCs = builder.Configuration.GetConnectionString("OracleDb");
@@ -143,5 +137,40 @@ public static class WebApplicationBuilderExtensions
         app.MapSolarMetricsHealthChecks();
 
         return app;
+    }
+
+    /// <summary>
+    /// Em Staging (Azure), usa servidor relativo "/" para o Try it out chamar o mesmo host do Swagger.
+    /// Em Development, usa os servers do appsettings (localhost, etc.).
+    /// </summary>
+    private static void ConfigureSwaggerServers(
+        SwaggerGenOptions swagger,
+        IHostEnvironment environment,
+        SwaggerConfig swaggerConfig)
+    {
+        if (environment.IsStaging())
+        {
+            swagger.AddServer(new OpenApiServer
+            {
+                Url = "/",
+                Description = "Host atual (Azure App Service)"
+            });
+            return;
+        }
+
+        if (!environment.IsDevelopment())
+            return;
+
+        foreach (var server in swaggerConfig.Servers ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(server.Url))
+                continue;
+
+            swagger.AddServer(new OpenApiServer
+            {
+                Url = server.Url.TrimEnd('/'),
+                Description = server.Name
+            });
+        }
     }
 }
