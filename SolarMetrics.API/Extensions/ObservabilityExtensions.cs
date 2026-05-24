@@ -45,20 +45,28 @@ public static class ObservabilityExtensions
                 tags: ["ready", "external"]);
         }
 
-        services.AddOpenTelemetry()
+        var telemetry = services.AddOpenTelemetry()
             .ConfigureResource(rb => rb.AddService(
                 serviceName: "SolarMetrics.API",
                 serviceVersion: typeof(ObservabilityExtensions).Assembly.GetName().Version?.ToString() ?? "1.0"))
-            .WithTracing(tb => tb
-                .AddAspNetCoreInstrumentation(o => o.RecordException = true)
-                .AddHttpClientInstrumentation()
-                .AddSource("SolarMetrics.API")
-                .AddConsoleExporter())
-            .WithMetrics(mb => mb
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddRuntimeInstrumentation()
-                .AddConsoleExporter());
+            .WithTracing(tb =>
+            {
+                tb.AddAspNetCoreInstrumentation(o => o.RecordException = true)
+                    .AddHttpClientInstrumentation()
+                    .AddSource("SolarMetrics.API");
+                if (environment.IsDevelopment())
+                    tb.AddConsoleExporter();
+            })
+            .WithMetrics(mb =>
+            {
+                mb.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation();
+                if (environment.IsDevelopment())
+                    mb.AddConsoleExporter();
+            });
+
+        _ = telemetry;
 
         return services;
     }

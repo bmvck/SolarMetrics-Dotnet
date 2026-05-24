@@ -98,8 +98,6 @@ builder.Services.AddScoped<IMonitoramentoUseCase, MonitoramentoUseCase>();
 
 var app = builder.Build();
 
-await app.EnsureMongoDbIndexesAsync();
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

@@ -18,8 +18,9 @@ public static class MongoDbServiceCollectionExtensions
 
         if (useMongo)
         {
-            services.AddSingleton<IMongoClient>(_ => new MongoClient(settings.ConnectionString));
+            services.AddSingleton<IMongoClient>(_ => CreateMongoClient(settings.ConnectionString));
             services.AddScoped<IChatbotInteractionRepository, MongoChatbotInteractionRepository>();
+            services.AddHostedService<MongoDbIndexInitializerHostedService>();
         }
         else
         {
@@ -29,24 +30,11 @@ public static class MongoDbServiceCollectionExtensions
         return services;
     }
 
-    public static async Task EnsureMongoDbIndexesAsync(this WebApplication app)
+    private static MongoClient CreateMongoClient(string connectionString)
     {
-        var settings = app.Services.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-        if (!settings.Enabled || string.IsNullOrWhiteSpace(settings.ConnectionString))
-            return;
-
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IChatbotInteractionRepository>();
-            if (!repository.IsEnabled)
-                return;
-            await repository.EnsureIndexesAsync();
-        }
-        catch (Exception ex)
-        {
-            var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("MongoDb");
-            logger.LogWarning(ex, "Não foi possível criar índices MongoDB na inicialização.");
-        }
+        var settings = MongoClientSettings.FromUrl(new MongoUrl(connectionString));
+        settings.ServerSelectionTimeout = TimeSpan.FromSeconds(10);
+        settings.ConnectTimeout = TimeSpan.FromSeconds(10);
+        return new MongoClient(settings);
     }
 }
